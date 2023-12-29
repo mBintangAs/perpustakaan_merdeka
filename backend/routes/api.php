@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\ExportDocument;
 use App\Http\Controllers\CategorieController;
 
 /*
@@ -25,3 +26,5 @@ Route::post('refresh', [AuthController::class,'refresh']);
 Route::post('me', [AuthController::class,'me']);
 Route::resource('/categories', CategorieController::class);
 Route::resource('/books', BookController::class);
+Route::get('/export/excel',[ExportDocument::class,'exportExcel']);
+// Route::get('/export/pdf',[ExportDocument::class,'exportExcel']);

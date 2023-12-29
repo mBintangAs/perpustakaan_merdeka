@@ -17,8 +17,6 @@ class CategorieController extends Controller
         return Categorie::all();
     }
 
-  
-
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
