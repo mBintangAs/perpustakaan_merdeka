@@ -30,6 +30,19 @@ export default function Book() {
     useEffect(() => {
         load()
     }, [])
+    useEffect(() => {
+        const performSearch = async () => {
+            try {
+                const res_search = await axios.post('/search', { q: search, type: "book" }, { headers: { Authorization: 'Bearer ' + localStorage.getItem('key') } })
+                console.log(search);
+                setBooks(res_search.data);
+            } catch (error) {
+                console.error('Error during search:', error);
+            }
+        };
+        performSearch()
+        // console.log(search);
+    }, [search])
     async function deleteBuku(id) {
 
         const MySwal = withReactContent(Swal)
@@ -48,14 +61,14 @@ export default function Book() {
                     await axios.delete(`/books/${id}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('key') } })
                     load();
                     MySwal.fire({
-                      title: "Deleted!",
-                      text: "Your file has been deleted.",
-                      icon: "success"
+                        title: "Deleted!",
+                        text: "Your file has been deleted.",
+                        icon: "success"
                     });
                 } catch (error) {
-                    
+
                 }
-              }
+            }
         })
         console.log(id);
     }
@@ -82,6 +95,7 @@ export default function Book() {
                                         <th scope="col">#</th>
                                         <th scope="col">Uploader</th>
                                         <th scope="col">Categori</th>
+                                        <th scope="col">Title</th>
                                         <th scope="col">Quantity</th>
                                         <th scope="col">Action</th>
 
@@ -93,6 +107,7 @@ export default function Book() {
                                             <td>{index + 1}</td>
                                             <td>{e.name}</td>
                                             <td>{e.category}</td>
+                                            <td>{e.title}</td>
                                             <td>{e.quantity}</td>
                                             <td className="d-flex gap-3">
                                                 <button type="button" className="btn  btn-primary ">Ubah</button>

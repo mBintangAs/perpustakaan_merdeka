@@ -4,6 +4,10 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import Select from "react-select";
 import Alert from "../partials/Alert";
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import { useNavigate } from "react-router-dom";
+
 
 export default function AddBook() {
     const [categories, setCategories] = useState([])
@@ -14,7 +18,7 @@ export default function AddBook() {
     const [coverImage, setCoverImage] = useState(null);
     const [bookFile, setBookFile] = useState(null);
     const [alert, setAlert] = useState([])
-
+    const navigate = useNavigate()
 
 
     const handleFileChange = (event) => {
@@ -50,8 +54,17 @@ export default function AddBook() {
                     'Content-Type': 'multipart/form-data',
                 },
             });
+            const MySwal = withReactContent(Swal)
 
+            MySwal.fire({
+                title: "Successfully Add Books",
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "Ok"
+            })
+            navigate('/books')
             console.log(res);
+
         } catch (error) {
             if (error.response && error.response.data && error.response.data.errors) {
                 const errorMessages = Object.values(error.response.data.errors).map((errorArray) => {
@@ -133,9 +146,9 @@ export default function AddBook() {
                             </button>
                             <NavLink to={'/books'}>
 
-                            <button className="btn  btn-secondary text-light" >
-                                Kembali
-                            </button>
+                                <button className="btn  btn-secondary text-light" >
+                                    Kembali
+                                </button>
                             </NavLink>
                         </div>
                     </div>

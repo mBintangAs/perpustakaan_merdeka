@@ -156,4 +156,39 @@ class BookController extends Controller
             Storage::delete($filePath);
         }
     }
+    public function search(Request $request)
+    {
+        $user = auth()->user();
+        $query = DB::table('books as b')
+            ->join('users as u', 'u.id', '=', 'b.user_id')
+            ->join('categories as c', 'c.id', '=', 'b.categorie_id')
+            ->select('b.*', 'u.name', 'c.name as category');
+        $searchTerm = $request->q;
+        if ($request->has('type') && $request->type === 'book') {
+            // Tambahkan logika pencarian di semua kolom buku
+            $query->where(function ($query) use ($searchTerm) {
+                $query
+                    ->where('b.title', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('b.description', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('b.quantity', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('u.name', 'like', '%' . $searchTerm . '%');
+            });
+        }
+        if ($request->has('type') && $request->type === 'category') {
+            // Tambahkan logika pencarian di semua kolom buku
+            $query->where(function ($query) use ($searchTerm) {
+                $query->Where('c.name', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        $data = $query
+            ->when(!$user->is_admin, function ($query) use ($user) {
+                $query->where('b.user_id', $user->id);
+            })
+            ->limit(10)
+            ->offset(0)
+            ->get();
+
+        return response()->json($data);
+    }
 }
