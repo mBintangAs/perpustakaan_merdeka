@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { axiosInstance } from "../main";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import axios from "axios";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -9,10 +10,24 @@ export default function Register() {
   const [name, setName] = useState("");
   const navigate = useNavigate();
   const [error, setError] = useState({});
+  useEffect(() => {
+    if (localStorage.getItem('key')) {
+      checkMe();
+    }
+    async function checkMe() {
+      try {
+        await axios.post('/me',null,{headers:{Authorization:'Bearer ' + localStorage.getItem('key')}})
+
+        navigate('/books')
+      } catch (e) {
+
+      }
+    }
+  })
   async function register(e) {
     e.preventDefault();
     try {
-      const res = await axiosInstance.post("/register", {
+      const res = await axios.post("/register", {
         email,
         password,
         name,

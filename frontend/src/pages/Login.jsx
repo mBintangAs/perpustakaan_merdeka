@@ -3,12 +3,15 @@ import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import Alert from "../partials/Alert";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   // type, message
   const [alert, setAlert] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Baca data dari Local Storage atau Session Storage
@@ -25,8 +28,33 @@ export default function Login() {
       setEmail(localStorage.getItem('email'))
       localStorage.removeItem('email')
     }
+    if (localStorage.getItem('key')) {
+      checkMe();
+    }
+    async function checkMe() {
+      try {
+        await axios.post('/me',null, { headers: { Authorization: 'Bearer ' + localStorage.getItem('key') } })
 
+        navigate('/books')
+      } catch (e) {
+
+      }
+    }
   }, []);
+  async function login(e) {
+    e.preventDefault();
+    try {
+      const res = await axios.post("/login", {
+        email,
+        password,
+      });
+      localStorage.setItem('key', res.data.access_token);
+      navigate("/");
+    } catch (err) {
+      setAlert([{ type: "danger", message: err.response.data.error }]);
+      // console.log(error);
+    }
+  }
 
   return (
     <>
@@ -49,33 +77,36 @@ export default function Login() {
               </div>
               {alert &&
                 alert.map(
-                  (e) => <Alert color={e.type} message={e.message} />
+                  (e) => <Alert key={e.message} color={e.type} message={e.message} />
                 )}
+              <form onSubmit={login} >
+                <div className="form-floating mb-3">
+                  <input
+                    type="email"
+                    className="form-control"
+                    onChange={e => setEmail(e.target.value)}
+                    value={email}
+                    required
+                    placeholder="name@example.com"
+                  />
+                  <label htmlFor="floatingInput">Email address</label>
+                </div>
+                <div className="form-floating mb-4">
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Password"
+                    value={password}
+                    required
+                    onChange={e => setPassword(e.target.value)}
+                  />
+                  <label htmlFor="floatingPassword">Password</label>
+                </div>
 
-              <div className="form-floating mb-3">
-                <input
-                  type="email"
-                  className="form-control"
-                  onChange={e => setEmail(e.target.value)}
-                  value={email}
-                  placeholder="name@example.com"
-                />
-                <label htmlFor="floatingInput">Email address</label>
-              </div>
-              <div className="form-floating mb-4">
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="Password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                />
-                <label htmlFor="floatingPassword">Password</label>
-              </div>
-
-              <button type="submit" className="btn btn-primary py-3 w-100 mb-4">
-                Sign In
-              </button>
+                <button type="submit" className="btn btn-primary py-3 w-100 mb-4">
+                  Sign In
+                </button>
+              </form>
               <NavLink to={"/register"} className="text-center mb-0">
                 Don't have an Account? Sign Up
               </NavLink>

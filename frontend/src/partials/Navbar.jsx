@@ -1,10 +1,9 @@
 import { useEffect } from "react";
 
-export default function Navbar() {
+export default function Navbar({setSearch}) {
   useEffect(() => {
     const handleSidebarToggle = () => {
       // Logika penanganan event listener di sini
-      console.log("Sidebar Toggled");
       // Contoh: Toggle kelas di beberapa elemen
       document.querySelector(".sidebar").classList.toggle("open");
       document.querySelector(".content").classList.toggle("open");
@@ -28,6 +27,7 @@ export default function Navbar() {
           <input
             className="form-control border-0"
             type="search"
+            onChange={e=>setSearch(e.target.value)}
             placeholder="Search"
           />
        
