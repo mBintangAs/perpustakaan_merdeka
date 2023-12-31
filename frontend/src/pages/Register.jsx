@@ -17,7 +17,8 @@ export default function Register() {
         password,
         name,
       });
-      localStorage.setItem('flash_data', JSON.stringify({ email, is_success_registered: true }));
+      localStorage.setItem('email', email);
+      localStorage.setItem('alert', JSON.stringify({ type: "success", message: "Registrasi Berhasil" }));
       navigate("/login");
     } catch (err) {
       setError(err.response.data.errors);
@@ -54,9 +55,9 @@ export default function Register() {
                     placeholder="name"
                   />
                   <label htmlFor="floatingInput">Name</label>
-                  {error?.name&& 
-                <p className="text-danger text-xs mt-1">{error?.name[0]}</p>
-                }
+                  {error?.name &&
+                    <p className="text-danger text-xs mt-1">{error?.name[0]}</p>
+                  }
                 </div>
                 <div className="form-floating mb-3">
                   <input
@@ -68,9 +69,9 @@ export default function Register() {
                     placeholder="name@example.com"
                   />
                   <label htmlFor="floatingInput">Email address</label>
-                  {error?.email&& 
-                <p className="text-danger text-xs mt-1">{error?.email[0]}</p>
-                }
+                  {error?.email &&
+                    <p className="text-danger text-xs mt-1">{error?.email[0]}</p>
+                  }
                 </div>
                 <div className="form-floating mb-4">
                   <input
@@ -82,9 +83,9 @@ export default function Register() {
                     placeholder="Password"
                   />
                   <label htmlFor="floatingPassword">Password</label>
-                {error?.password&& 
-                <p className="text-danger text-xs mt-1">{error?.password[0]}</p>
-                }
+                  {error?.password &&
+                    <p className="text-danger text-xs mt-1">{error?.password[0]}</p>
+                  }
                 </div>
                 <button
                   type="submit"
