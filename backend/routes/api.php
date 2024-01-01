@@ -26,6 +26,7 @@ Route::post('refresh', [AuthController::class,'refresh']);
 Route::post('me', [AuthController::class,'me']);
 Route::resource('/categories', CategorieController::class);
 Route::resource('/books', BookController::class);
+Route::get('/books/cover',[ExportDocument::class,'showCover']);
 Route::post('/search',[BookController::class,'search']);
 Route::get('/export/excel',[ExportDocument::class,'exportExcel']);
 Route::get('/export/pdf',[ExportDocument::class,'exportPdf']);

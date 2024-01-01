@@ -12,6 +12,7 @@ import Register from "./pages/Register";
 import { Navigate } from "react-router-dom";
 import Book from "./pages/Book";
 import AddBook from "./pages/AddBook";
+import EditBook from "./pages/EditBook";
 
 // axios.defaults.headers.common['Authorization'] ='Bearer ' + localStorage.getItem('key')
 axios.defaults.baseURL = 'http://localhost:8000/api/';
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: "/books/add",
         element: <AddBook />,
+      },
+      {
+        path: "/books/edit/:title",
+        element: <EditBook />,
       },
 
     ]

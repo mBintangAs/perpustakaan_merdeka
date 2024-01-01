@@ -28,7 +28,6 @@ export default function Book() {
 
         }
     }
-
     const performSearch = async (search, offset = 0) => {
         try {
             const res_search = await axios.post('/search', { q: search, type: "book", offset }, { headers: { Authorization: 'Bearer ' + localStorage.getItem('key') } })
@@ -42,21 +41,6 @@ export default function Book() {
         setOffsetScroll(newOffset);
     };
 
-    useEffect(() => {
-        if (search) {
-            performSearch(search, offsetScroll);
-        } else {
-            load(offsetScroll);
-        }
-    }, [offsetScroll]);
-
-    useEffect(() => {
-        load()
-    }, [])
-    useEffect(() => {
-        performSearch(search)
-        // console.log(search);
-    }, [search])
     async function deleteBuku(id) {
 
         const MySwal = withReactContent(Swal)
@@ -86,6 +70,30 @@ export default function Book() {
         })
         console.log(id);
     }
+    async function download(type) {
+        try {
+            let urlTarget = axios.defaults.baseURL + `export/${type}?token=` + localStorage.getItem('key')
+            window.open(urlTarget, '_blank');
+        } catch (error) {
+
+        }
+    }
+
+    useEffect(() => {
+        if (search) {
+            performSearch(search, offsetScroll);
+        } else {
+            load(offsetScroll);
+        }
+    }, [offsetScroll]);
+    useEffect(() => {
+        load()
+    }, [])
+    useEffect(() => {
+        performSearch(search)
+        // console.log(search);
+    }, [search])
+
     return (
         <>
             <div className="container-fluid pt-4 px-4">
@@ -94,12 +102,23 @@ export default function Book() {
                     <div className="bg-light rounded h-100 p-4">
                         <div className="d-flex justify-content-between">
                             <h6 className="mb-4">List Buku</h6>
-                            <NavLink to={'/books/add'}>
-                                <button className="btn btn-sm  btn-primary text-light" >
-                                    Tambah Buku
-                                </button>
+                            <div className="d-flex gap-3">
+                                <div className="dropdown">
+                                    <button className="btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Export
+                                    </button>
+                                    <ul className="dropdown-menu">
 
-                            </NavLink>
+                                        <li><a onClick={() => download("pdf")} className="dropdown-item" href="#">PDF</a></li>
+                                        <li><a className="dropdown-item" onClick={() => download("excel")}>Excel</a></li>
+                                    </ul>
+                                </div>
+                                <NavLink to={'/books/add'}>
+                                    <button className="btn btn-sm  btn-primary text-light" >
+                                        Tambah Buku
+                                    </button>
+                                </NavLink>
+                            </div>
                         </div>
 
                         <div className="table-responsive"   >
@@ -124,7 +143,9 @@ export default function Book() {
                                             <td>{e.title}</td>
                                             <td>{e.quantity}</td>
                                             <td className="d-flex gap-3">
-                                                <button type="button" className="btn  btn-primary ">Ubah</button>
+                                                <NavLink to={'/books/edit/'+e.title}>
+                                                    <button type="button" className="btn  btn-primary ">Lihat</button>
+                                                </NavLink>
                                                 <button type="button" onClick={() => deleteBuku(e.id)} className="btn  btn-danger ">Hapus</button>
                                             </td>
                                         </tr>

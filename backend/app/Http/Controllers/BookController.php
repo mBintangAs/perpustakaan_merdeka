@@ -70,12 +70,19 @@ class BookController extends Controller
      */
     public function show(Request $request, $id)
     {
-        if (auth()->user()->is_admin) {
-            return Book::where('title', $id)->first();
-        }
-        return Book::where('user_id', auth()->user()->id)
-            ->where('title', $id)
+       
+        $user = auth()->user();
+        $data = DB::table('books as b')
+            ->join('users as u', 'u.id', '=', 'b.user_id')
+            ->join('categories as c', 'c.id', '=', 'b.categorie_id')
+            ->select('b.*', 'u.name', 'c.name as category')
+            ->when(!$user->is_admin, function ($query) use ($user) {
+                $query->where('b.user_id', $user->id);
+            })
+            ->where('title',$id)
             ->first();
+
+        return response()->json($data);
     }
 
     /**
@@ -175,7 +182,6 @@ class BookController extends Controller
                     ->orWhere('b.quantity', 'like', '%' . $searchTerm . '%')
                     ->orWhere('u.name', 'like', '%' . $searchTerm . '%')
                     ->orWhere('c.name', 'like', '%' . $searchTerm . '%');
-                    
             });
         }
         if ($request->has('type') && $request->type === 'category') {
@@ -195,4 +201,18 @@ class BookController extends Controller
 
         return response()->json($data);
     }
+
+    public function showCover(Request $request)
+{
+    $path = storage_path('app/cover_file/' . $request->$filename);
+
+    return response()->file($path);
+}
+    public function downloadBook($filename)
+{
+    $path = storage_path('app/cover_file/' . $filename);
+
+    return response()->file($path);
+}
+
 }

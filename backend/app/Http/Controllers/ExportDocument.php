@@ -19,7 +19,7 @@ class ExportDocument extends Controller
         if (auth()->user()->is_admin) {
             return Excel::download(new BooksExport(), 'books.xlsx');
         }
-        return Excel::download(new BooksExport(auth()->user()->id), 'books.xlsx');
+        return Excel::download(new BooksExport(auth()->user()->id), 'List_buku.xlsx');
     }
     public function exportPdf()
     {
@@ -34,11 +34,9 @@ class ExportDocument extends Controller
         $buku= $buku->get();
         $is_admin= auth()->user()->is_admin;
         $logo_kampus_merdeka= $this->convertBase64('KMLOGO.png');
-        // dd($logo_kampus_merdeka);
         $pdf = Pdf::loadView('list_book_pdf', compact('buku','is_admin','logo_kampus_merdeka'));
         $pdf->setOptions(['margin_top' => 0, 'margin_right' => 0, 'margin_bottom' => 0, 'margin_left' => 0]);
-
-        return $pdf->download('book_list.pdf');
+        return $pdf->download('list_buku.pdf');
     }
     public function convertBase64($storagePath)
     {
