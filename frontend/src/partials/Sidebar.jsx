@@ -35,10 +35,12 @@ export default function Sidebar({ role, username }) {
               <i className="fas fa-clipboard-list me-2"></i>
               Buku
             </NavLink>
+            {role=="Admin"&&
             <NavLink to={'/categories'} activeclassname="active" className="nav-item nav-link mb-3">
               <i className="fas fa-th me-2"></i>
               Kategori
             </NavLink>
+            }
             <NavLink onClick={logout}  className="nav-item nav-link ">
               <i className="fa fa-sign-out-alt me-2"></i>
               Logout

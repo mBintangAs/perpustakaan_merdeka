@@ -35,7 +35,6 @@ class CategorieController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|unique:categories',
         ]);
-
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
