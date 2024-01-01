@@ -30,10 +30,10 @@ export default function Book() {
     }
     const performSearch = async (search, offset = 0) => {
         try {
-            const res_search = await axios.post('/search', { q: search, type: "book", offset }, { headers: { Authorization: 'Bearer ' + localStorage.getItem('key') } })
+            const res_search = await axios.post('/search/books', { q: search, type: "book", offset }, { headers: { Authorization: 'Bearer ' + localStorage.getItem('key') } })
             setBooks(res_search.data);
         } catch (error) {
-            console.error('Error during search:', error);
+            // console.error('Error during search:', error);
         }
     };
     const handlePaging = (next) => {
@@ -80,7 +80,7 @@ export default function Book() {
     }
 
     useEffect(() => {
-        if (search) {
+        if (search) {   
             performSearch(search, offsetScroll);
         } else {
             load(offsetScroll);
@@ -152,11 +152,9 @@ export default function Book() {
                                     )}
                                 </tbody>
                             </table>
-                            {books.length >= 10 &&
                                 <div className="d-flex justify-content-center">
-                                    <Pagination handlePaging={handlePaging} offsetScroll={offsetScroll} />
+                                    <Pagination length={books.length} handlePaging={handlePaging} offsetScroll={offsetScroll} />
                                 </div>
-                            }
 
                         </div>
                     </div>

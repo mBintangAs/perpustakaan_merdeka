@@ -13,6 +13,7 @@ import { Navigate } from "react-router-dom";
 import Book from "./pages/Book";
 import AddBook from "./pages/AddBook";
 import EditBook from "./pages/EditBook";
+import Categories from "./pages/Categories";
 
 // axios.defaults.headers.common['Authorization'] ='Bearer ' + localStorage.getItem('key')
 axios.defaults.baseURL = 'http://localhost:8000/api/';
@@ -48,11 +49,16 @@ const router = createBrowserRouter([
         path: "/books/edit/:title",
         element: <EditBook />,
       },
+      {
+        path: "/categories",
+        element: <Categories />,
+      },
 
     ]
   },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
   
-  <RouterProvider router={router} />
+    <RouterProvider router={router} />
+  
 );

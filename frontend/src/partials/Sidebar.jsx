@@ -35,7 +35,7 @@ export default function Sidebar({ role, username }) {
               <i className="fas fa-clipboard-list me-2"></i>
               Buku
             </NavLink>
-            <NavLink to={'/categori'} activeclassname="active" className="nav-item nav-link mb-3">
+            <NavLink to={'/categories'} activeclassname="active" className="nav-item nav-link mb-3">
               <i className="fas fa-th me-2"></i>
               Kategori
             </NavLink>

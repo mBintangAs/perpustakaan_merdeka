@@ -44,7 +44,6 @@ export default function EditBook() {
                 setLinkBookFile(res_book.data.book_file)
                 const res_img_cover = await axios.get('/cover-book?filename=' + res_book.data.cover_file, { headers: { Authorization: 'Bearer ' + localStorage.getItem('key') }, responseType: "blob" })
                 // Membuat URL objek dari blob
-                console.log(res_img_cover);
                 const url = window.URL.createObjectURL(new Blob([res_img_cover.data]));
                 // Menemukan elemen gambar dan mengatur sumbernya ke URL
                 const img = document.getElementById('cover-buku');
@@ -93,7 +92,6 @@ export default function EditBook() {
             if (bookFile != null) {
                 formData.append('book', bookFile);   // Assuming bookFile is a File object
             }
-            console.log(formData);
             const res = await axios.post('/books/' + idBook, formData, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('key'),
@@ -118,7 +116,6 @@ export default function EditBook() {
 
                 setAlert(errorMessages);
             } else {
-                console.log(error.response.data);
                 setAlert([{ type: "danger", message: "An unexpected error occurred." }]);
             }
         }
@@ -189,7 +186,7 @@ export default function EditBook() {
                             <label htmlFor="pdf_buku_file" className="form-label">File Buku</label>
                             {isDisabled ?
                                 <div className="mb-3">
-                                    <button onClick={()=>download()} className="btn btn-primary"><i className="fas fa-download"></i> Unduh</button>
+                                    <button type="button" onClick={()=>download()} className="btn btn-primary"><i className="fas fa-download"></i> Unduh</button>
                                 </div> :
                                 <input className="form-control"
                                     disabled={isDisabled}

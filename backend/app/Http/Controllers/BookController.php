@@ -183,12 +183,7 @@ class BookController extends Controller
                     ->orWhere('c.name', 'like', '%' . $searchTerm . '%');
             });
         }
-        if ($request->has('type') && $request->type === 'category') {
-            // Tambahkan logika pencarian di semua kolom buku
-            $query->where(function ($query) use ($searchTerm) {
-                $query->Where('c.name', 'like', '%' . $searchTerm . '%');
-            });
-        }
+      
 
         $data = $query
             ->when(!$user->is_admin, function ($query) use ($user) {
@@ -209,6 +204,6 @@ class BookController extends Controller
     {
         $path = storage_path('app/books/' . $request->filename);
 
-        return response()->file($path);
+        return response()->download($path);
     }
 }

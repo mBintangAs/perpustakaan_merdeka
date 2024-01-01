@@ -1,5 +1,5 @@
 
-export default function Pagination({ offsetScroll, handlePaging }){
+export default function Pagination({ offsetScroll, handlePaging,length }){
   return (
     <nav aria-label="...">
       <ul className="pagination">
@@ -16,7 +16,7 @@ export default function Pagination({ offsetScroll, handlePaging }){
             </a>
           </li>
         ))} */}
-        <li className="page-item">
+        <li className={`page-item ${length < 10 ? 'disabled' : ''}`}>
           <a className="page-link btn"  onClick={() => handlePaging(true)}>
             Next
           </a>

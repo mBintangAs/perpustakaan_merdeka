@@ -10,11 +10,12 @@ class CategorieController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth:api', 'is_admin'], ['except' => ['index', 'show']]);
+        $this->middleware(['auth:api', 'is_admin'], ['except' => ['index', 'show','search']]);
     }
-    public function index()
+    public function index(Request $request)
     {
-        return Categorie::all();
+        $offset= $request->offset?$request->offset:0;
+        return Categorie::limit(10)->offset($offset)->get();
     }
 
     public function store(Request $request)
@@ -47,5 +48,11 @@ class CategorieController extends Controller
     {
         Categorie::destroy($id);
         return response()->json(['message' => 'Category deleted']);
+    }
+    public function search(Request $request)
+    {
+        $offset = $request->offset ? $request->offset : 0;
+        $searchTerm = $request->q;
+        return Categorie::where('name','like', '%' . $searchTerm . '%')->limit(10)->offset($offset)->get();
     }
 }
