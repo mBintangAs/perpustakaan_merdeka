@@ -18,15 +18,16 @@ class BookController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
+        $offset = $request->offset ? $request->offset:0;
         $data = DB::table('books as b')
             ->join('users as u', 'u.id', '=', 'b.user_id')
             ->join('categories as c', 'c.id', '=', 'b.categorie_id')
             ->select('b.*', 'u.name', 'c.name as category')
             ->limit(10)
-            ->offset(0)
+            ->offset($offset)
             ->when(!$user->is_admin, function ($query) use ($user) {
                 $query->where('b.user_id', $user->id);
             })
@@ -158,6 +159,7 @@ class BookController extends Controller
     }
     public function search(Request $request)
     {
+        $offset = $request->offset ? $request->offset:0;
         $user = auth()->user();
         $query = DB::table('books as b')
             ->join('users as u', 'u.id', '=', 'b.user_id')
@@ -171,7 +173,9 @@ class BookController extends Controller
                     ->where('b.title', 'like', '%' . $searchTerm . '%')
                     ->orWhere('b.description', 'like', '%' . $searchTerm . '%')
                     ->orWhere('b.quantity', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('u.name', 'like', '%' . $searchTerm . '%');
+                    ->orWhere('u.name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('c.name', 'like', '%' . $searchTerm . '%');
+                    
             });
         }
         if ($request->has('type') && $request->type === 'category') {
@@ -186,7 +190,7 @@ class BookController extends Controller
                 $query->where('b.user_id', $user->id);
             })
             ->limit(10)
-            ->offset(0)
+            ->offset($offset)
             ->get();
 
         return response()->json($data);

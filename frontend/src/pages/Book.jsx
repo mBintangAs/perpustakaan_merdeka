@@ -1,10 +1,12 @@
 import axios from "axios"
+import { useRef } from "react"
 import { useEffect } from "react"
 import { useState } from "react"
 import { NavLink } from "react-router-dom"
 import { useOutletContext } from "react-router-dom"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import Pagination from "../partials/Pagination"
 
 
 export default function Book() {
@@ -15,32 +17,44 @@ export default function Book() {
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
     const [quantity, setQuantity] = useState('');
-    async function load() {
+    const [offsetScroll, setOffsetScroll] = useState(0);
+
+
+    async function load(offset = 0) {
         try {
-            const res_book = await axios.get('/books', { headers: { Authorization: 'Bearer ' + localStorage.getItem('key') } })
-            setBooks(res_book.data)
-            const res_categories = await axios.get('/categories', { headers: { Authorization: 'Bearer ' + localStorage.getItem('key') } })
-            let categories = [];
-            res_categories.data.map((e) => categories.push({ value: e.id, label: e.name }))
-            setCategories(categories)
+            const res_book = await axios.get(`/books?offset=${offset}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('key') } })
+            setBooks(res_book.data);
         } catch (error) {
 
         }
     }
+
+    const performSearch = async (search, offset = 0) => {
+        try {
+            const res_search = await axios.post('/search', { q: search, type: "book", offset }, { headers: { Authorization: 'Bearer ' + localStorage.getItem('key') } })
+            setBooks(res_search.data);
+        } catch (error) {
+            console.error('Error during search:', error);
+        }
+    };
+    const handlePaging = (next) => {
+        const newOffset = next ? offsetScroll + 10 : Math.max(offsetScroll - 10, 0);
+        setOffsetScroll(newOffset);
+    };
+
+    useEffect(() => {
+        if (search) {
+            performSearch(search, offsetScroll);
+        } else {
+            load(offsetScroll);
+        }
+    }, [offsetScroll]);
+
     useEffect(() => {
         load()
     }, [])
     useEffect(() => {
-        const performSearch = async () => {
-            try {
-                const res_search = await axios.post('/search', { q: search, type: "book" }, { headers: { Authorization: 'Bearer ' + localStorage.getItem('key') } })
-                console.log(search);
-                setBooks(res_search.data);
-            } catch (error) {
-                console.error('Error during search:', error);
-            }
-        };
-        performSearch()
+        performSearch(search)
         // console.log(search);
     }, [search])
     async function deleteBuku(id) {
@@ -88,7 +102,7 @@ export default function Book() {
                             </NavLink>
                         </div>
 
-                        <div className="table-responsive">
+                        <div className="table-responsive"   >
                             <table className="table">
                                 <thead>
                                     <tr>
@@ -117,6 +131,12 @@ export default function Book() {
                                     )}
                                 </tbody>
                             </table>
+                            {books.length >= 10 &&
+                                <div className="d-flex justify-content-center">
+                                    <Pagination handlePaging={handlePaging} offsetScroll={offsetScroll} />
+                                </div>
+                            }
+
                         </div>
                     </div>
                 </div>
