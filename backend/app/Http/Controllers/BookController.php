@@ -21,7 +21,7 @@ class BookController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $offset = $request->offset ? $request->offset:0;
+        $offset = $request->offset ? $request->offset : 0;
         $data = DB::table('books as b')
             ->join('users as u', 'u.id', '=', 'b.user_id')
             ->join('categories as c', 'c.id', '=', 'b.categorie_id')
@@ -70,7 +70,6 @@ class BookController extends Controller
      */
     public function show(Request $request, $id)
     {
-       
         $user = auth()->user();
         $data = DB::table('books as b')
             ->join('users as u', 'u.id', '=', 'b.user_id')
@@ -79,7 +78,7 @@ class BookController extends Controller
             ->when(!$user->is_admin, function ($query) use ($user) {
                 $query->where('b.user_id', $user->id);
             })
-            ->where('title',$id)
+            ->where('title', $id)
             ->first();
 
         return response()->json($data);
@@ -101,7 +100,7 @@ class BookController extends Controller
     {
         $validator = validator($request->all(), [
             'categorie_id' => 'required|exists:categories,id',
-            'title' => 'required|string|unique:books,title,',
+            'title' => 'required|string',
             'description' => 'required|string',
             'quantity' => 'required|integer',
             'cover' => 'nullable|image|mimes:png,jpg,jpeg|max:1024',
@@ -166,7 +165,7 @@ class BookController extends Controller
     }
     public function search(Request $request)
     {
-        $offset = $request->offset ? $request->offset:0;
+        $offset = $request->offset ? $request->offset : 0;
         $user = auth()->user();
         $query = DB::table('books as b')
             ->join('users as u', 'u.id', '=', 'b.user_id')
@@ -201,18 +200,15 @@ class BookController extends Controller
 
         return response()->json($data);
     }
-
     public function showCover(Request $request)
-{
-    $path = storage_path('app/cover_file/' . $request->$filename);
-
+    {
+        $path = storage_path('app/cover_file/' . $request->filename);
     return response()->file($path);
-}
-    public function downloadBook($filename)
-{
-    $path = storage_path('app/cover_file/' . $filename);
+    }
+    public function downloadBook(Request $request)
+    {
+        $path = storage_path('app/books/' . $request->filename);
 
-    return response()->file($path);
-}
-
+        return response()->file($path);
+    }
 }

@@ -19,14 +19,14 @@ export default function EditBook() {
     const [description, setDescription] = useState('');
     const [quantity, setQuantity] = useState('');
     const [coverImage, setCoverImage] = useState(null);
-    const [displayCoverImage, setDisplayCoverImage] = useState('')
     const [isDisabled, setIsDisabled] = useState(true)
     const [idBook, setIdBook] = useState("")
-
-
+    const [linkBookFile, setLinkBookFile] = useState('');
     const [bookFile, setBookFile] = useState(null);
     const [alert, setAlert] = useState([])
     const navigate = useNavigate()
+
+
 
     useEffect(() => {
         async function load() {
@@ -41,6 +41,14 @@ export default function EditBook() {
                 setDescription(res_book.data.description)
                 setQuantity(res_book.data.quantity)
                 setIdBook(res_book.data.id)
+                setLinkBookFile(res_book.data.book_file)
+                const res_img_cover = await axios.get('/cover-book?filename=' + res_book.data.cover_file, { headers: { Authorization: 'Bearer ' + localStorage.getItem('key') }, responseType: "blob" })
+                // Membuat URL objek dari blob
+                console.log(res_img_cover);
+                const url = window.URL.createObjectURL(new Blob([res_img_cover.data]));
+                // Menemukan elemen gambar dan mengatur sumbernya ke URL
+                const img = document.getElementById('cover-buku');
+                img.src = url;
             } catch (error) {
 
             }
@@ -76,9 +84,17 @@ export default function EditBook() {
             formData.append('title', title);
             formData.append('description', description);
             formData.append('quantity', quantity);
-            formData.append('cover', coverImage); // Assuming coverImage is a File object
-            formData.append('book', bookFile);   // Assuming bookFile is a File object
-            const res = await axios.put('/books/' + idBook, formData, {
+            if (coverImage != null) {
+                formData.append('cover', coverImage); // Assuming coverImage is a File object
+            }
+            if (coverImage != null) {
+                formData.append('cover', coverImage); // Assuming coverImage is a File object
+            }
+            if (bookFile != null) {
+                formData.append('book', bookFile);   // Assuming bookFile is a File object
+            }
+            console.log(formData);
+            const res = await axios.post('/books/' + idBook, formData, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('key'),
                     'Content-Type': 'multipart/form-data',
@@ -108,7 +124,14 @@ export default function EditBook() {
         }
     };
 
-  
+    async function download(filename) {
+        try {
+            let urlTarget = axios.defaults.baseURL + `file-book?filename=${linkBookFile}&token=` + localStorage.getItem('key')
+            window.open(urlTarget, '_blank');
+        } catch (error) {
+
+        }
+    }
     return (
         <>
             <form onSubmit={editBook}>
@@ -118,7 +141,7 @@ export default function EditBook() {
                             <Alert key={index} color={alert.type} message={alert.message} />
                         ))}
                         <p className="">Categories</p>
-                        <Select value={categories.filter(option=>option.value==category)} required={true} isDisabled={isDisabled} disabled onChange={(e) => setCategory(e.value)} options={categories}></Select>
+                        <Select value={categories.filter(option => option.value == category)} required={true} isDisabled={isDisabled} disabled onChange={(e) => setCategory(e.value)} options={categories}></Select>
                         <div className="form-floating my-3">
                             <input
                                 disabled={isDisabled}
@@ -153,16 +176,25 @@ export default function EditBook() {
                         </div>
                         <div className="mb-3">
                             <label htmlFor="cover_buku_file" className="form-label">Cover Buku</label>
-                            <input className="form-control"
-                                disabled={isDisabled}
-                                accept="image/*" onChange={handleFileChange} type="file" id="cover_buku_file" />
+                            {isDisabled ?
+                                <div className="w-100 mb-3">
+                                    <img alt="cover-buku" style={{ width: "100%", objectFit: "cover" }} id="cover-buku" />
+                                </div>
+                                : <input className="form-control"
+                                    disabled={isDisabled}
+                                    accept="image/*" onChange={handleFileChange} type="file" id="cover_buku_file" />
+                            }
                         </div>
                         <div className="mb-3">
                             <label htmlFor="pdf_buku_file" className="form-label">File Buku</label>
-                            <input className="form-control"
-                                disabled={isDisabled}
-                                type="file" accept="application/pdf" id="pdf_buku_file" onChange={handleFileChange} />
-                        </div>
+                            {isDisabled ?
+                                <div className="mb-3">
+                                    <button onClick={()=>download()} className="btn btn-primary"><i className="fas fa-download"></i> Unduh</button>
+                                </div> :
+                                <input className="form-control"
+                                    disabled={isDisabled}
+                                    type="file" accept="application/pdf" id="pdf_buku_file" onChange={handleFileChange} />
+                            }</div>
                         <div className="d-flex justify-content-between">
 
                             <button className="btn  btn-primary text-light" >
